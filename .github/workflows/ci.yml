@@ -1,35 +1,44 @@
-   name: Run Playwright Tests
+name: Playwright Tests
 
-   on:
-     push:
-       branches:
-         - main
-     pull_request:
-       branches:
-         - main
+# Триггеры для запуска workflow
+on:
+  push:
+    branches:
+      - main  # Запускать при пуше в ветку main
+  pull_request:
+    branches:
+      - main  # Запускать при создании PR в ветку main
 
-   jobs:
-     test:
-       runs-on: ubuntu-latest
+# Задачи, которые будут выполняться
+jobs:
+  test:
+    # Запуск на последней версии Ubuntu
+    runs-on: ubuntu-latest
 
-       steps:
-         - name: Checkout code
-           uses: actions/checkout@v4
+    # Шаги выполнения
+    steps:
+      # Шаг 1: Проверка кода
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-         - name: Set up Node.js
-           uses: actions/setup-node@v4
-           with:
-             node-version: '16' # или другая версия Node.js
+      # Шаг 2: Установка Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Укажите нужную версию Node.js
 
-         - name: Install dependencies
-           run: npm install
+      # Шаг 3: Установка зависимостей
+      - name: Install dependencies
+        run: npm install
 
-         - name: Run Playwright tests
-           run: node test-3.spec.ts > result.log; echo "##[group]Test Results"; cat result.log; echo "##[endgroup]"
+      # Шаг 4: Запуск тестов Playwright
+      - name: Run Playwright tests
+        run: npx playwright test
 
-         - name: Upload Test Results
-           uses: actions/upload-artifact@v4
-           with:
-             name: test-results
-             path: result.log
-   
+      # Шаг 5 (опционально): Загрузка артефактов (например, отчетов или скриншотов)
+      - name: Upload test artifacts
+        if: always()  # Загружать артефакты, даже если тесты упали
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/  # Папка с отчетом Playwright
