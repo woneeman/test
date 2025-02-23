@@ -1,0 +1,35 @@
+   name: Run Playwright Tests
+
+   on:
+     push:
+       branches:
+         - main
+     pull_request:
+       branches:
+         - main
+
+   jobs:
+     test:
+       runs-on: ubuntu-latest
+
+       steps:
+         - name: Checkout code
+           uses: actions/checkout@v2
+
+         - name: Set up Node.js
+           uses: actions/setup-node@v2
+           with:
+             node-version: '16' # или другая версия Node.js
+
+         - name: Install dependencies
+           run: npm install
+
+         - name: Run Playwright tests
+           run: node test.js > result.log; echo "##[group]Test Results"; cat result.log; echo "##[endgroup]"
+
+         - name: Upload Test Results
+           uses: actions/upload-artifact@v2
+           with:
+             name: test-results
+             path: result.log
+   
